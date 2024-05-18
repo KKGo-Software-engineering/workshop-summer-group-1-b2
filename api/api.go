@@ -44,6 +44,10 @@ func New(db *sql.DB, cfg config.Config, logger *zap.Logger) *Server {
 		v1.GET("/incomes/summary", h.GetSummaryExpensesHandler)
 		v1.GET("/balance", h.GetSummaryBalanceHandler)
 	}
-
+	{
+		h := transaction.New(cfg.FeatureFlag, db)
+		v1.GET("/transaction", h.GetAllTransaction)
+		//v1.POST("/spenders", h.Create)
+	}
 	return &Server{e}
 }
