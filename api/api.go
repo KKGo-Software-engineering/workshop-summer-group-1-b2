@@ -46,7 +46,8 @@ func New(db *sql.DB, cfg config.Config, logger *zap.Logger) *Server {
 	}
 	{
 		h := transaction.New(cfg.FeatureFlag, db)
-		v1.GET("/transaction", h.GetAllTransaction)
+		v1.GET("/transactions", h.GetAllTransaction)
+		v1.GET("/transactions?page=1&limit=1&transaction_type=expense", h.GetFilteredTransaction)
 		//v1.POST("/spenders", h.Create)
 		h = transaction.New(cfg.FeatureFlag, db)
 		v1.POST("/transactions", h.CreateTransaction)
