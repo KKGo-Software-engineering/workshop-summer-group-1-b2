@@ -8,3 +8,4 @@ infra/iac/sonarqube/ansible/creds/*
 **/plan.json
 **/tfplan.binary
 .envrc
+.vscode
