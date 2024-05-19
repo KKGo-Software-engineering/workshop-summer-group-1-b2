@@ -11,7 +11,7 @@ type Transaction struct {
 	Date            string  `json:"date"`
 	Amount          float64 `json:"amount"`
 	Catergory       string  `json:"catergory"`
-	TransectionType string  `json:"transection_type"`
+	TransactionType string  `json:"transaction_type"`
 	Note            string  `json:"note"`
 	ImageUrl        string  `json:"image_url"`
 	SpenderId       int64   `json:"spender_id"`
