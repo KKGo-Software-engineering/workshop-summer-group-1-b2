@@ -54,3 +54,58 @@ func (h handler) GetSummaryIncomeHandler(c echo.Context) error {
 		TotalNumberEarned:     s.TotalNumber,
 	})
 }
+
+func (h handler) GetSummaryBalanceHandler(c echo.Context) error {
+
+	var mockTransaction = []Transaction{
+		{
+			Id:              1,
+			Date:            "2024-04-30T09:00:00.000Z",
+			Amount:          1000,
+			Catergory:       "Food",
+			TransactionType: "income",
+			Note:            "Lunch",
+			ImageUrl:        "https://example.com/image1.jpg",
+			SpenderId:       1,
+		},
+		{
+			Id:              2,
+			Date:            "2024-04-29T19:00:00.000Z",
+			Amount:          2000,
+			Catergory:       "Transport",
+			TransactionType: "income",
+			Note:            "Salary",
+			ImageUrl:        "https://example.com/image2.jpg",
+			SpenderId:       1,
+		},
+		{
+			Id:              3,
+			Date:            "2024-04-29T19:00:00.000Z",
+			Amount:          2000,
+			Catergory:       "Transport",
+			TransactionType: "income",
+			Note:            "Salary",
+			ImageUrl:        "https://example.com/image2.jpg",
+			SpenderId:       1,
+		},
+		{
+			Id:              4,
+			Date:            "2024-04-29T19:00:00.000Z",
+			Amount:          2000,
+			Catergory:       "Transport",
+			TransactionType: "expense",
+			Note:            "Salary",
+			ImageUrl:        "https://example.com/image2.jpg",
+			SpenderId:       1,
+		},
+	}
+
+	s := GetBalance(mockTransaction)
+
+	return c.JSON(http.StatusOK, Balance{
+		TotalAmountEarned: s.TotalAmountEarned,
+		TotalAmountSpent:  s.TotalAmountSpent,
+		TotalAmountSaved:  s.TotalAmountSaved,
+	})
+
+}

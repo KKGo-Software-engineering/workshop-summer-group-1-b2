@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -67,8 +66,6 @@ type Summary struct {
 }
 
 func roundedNumber(n float64) float64 {
-	fmt.Println(n)
-	fmt.Println(n * 100)
 	return math.Round(n*100) / 100
 }
 
@@ -88,21 +85,23 @@ func GetSummary(ts []Transaction) Summary {
 	}
 }
 
-// func GetSummaryExpenses(t []Transaction) SummaryExpenses {
-// 	totalAmountSpent := 0.0
-// 	totalNumberSpent := 0
+func GetBalance(ts []Transaction) Balance {
+	totalIncome := 0.0
+	totalExpense := 0.0
 
-// 	for _, transaction := range t {
-// 		if transaction.TransectionType == "expense" {
-// 			totalAmountSpent += transaction.Amount
-// 			totalNumberSpent++
-// 		}
-// 	}
+	for _, t := range ts {
+		if t.TransactionType == "income" {
+			totalIncome += t.Amount
+		} else if t.TransactionType == "expense" {
+			totalExpense += t.Amount
+		}
 
-// 	return SummaryExpenses{
-// 		TotalAmountSpent:     totalAmountSpent,
-// 		AvgAmountSpentPerDay: totalAmountSpent / float64(totalNumberSpent),
-// 		TotalNumberSpent:     totalNumberSpent,
-// 	}
+	}
 
-// }
+	return Balance{
+		TotalAmountEarned: roundedNumber(totalIncome),
+		TotalAmountSpent:  roundedNumber(totalExpense),
+		TotalAmountSaved:  roundedNumber(totalIncome - totalExpense),
+	}
+
+}
