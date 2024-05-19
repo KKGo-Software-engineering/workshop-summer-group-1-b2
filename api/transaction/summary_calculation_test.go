@@ -25,7 +25,7 @@ var mockSpecificTypeTransaction = []Transaction{
 	},
 	{
 		Id:              3,
-		Date:            "2024-04-29T19:00:00.000Z",
+		Date:            "2024-04-28T19:00:00.000Z",
 		Amount:          2000,
 		Catergory:       "Transport",
 		TransactionType: "income",
@@ -48,7 +48,7 @@ var mockTransaction = []Transaction{
 	},
 	{
 		Id:              2,
-		Date:            "2024-05-29T19:00:00.000Z",
+		Date:            "2024-05-28T19:00:00.000Z",
 		Amount:          2000,
 		Catergory:       "Transport",
 		TransactionType: "income",
@@ -68,7 +68,7 @@ var mockTransaction = []Transaction{
 	},
 	{
 		Id:              4,
-		Date:            "2024-04-29T19:00:00.000Z",
+		Date:            "2024-04-26T19:00:00.000Z",
 		Amount:          2000,
 		Catergory:       "Transport",
 		TransactionType: "expense",

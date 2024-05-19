@@ -80,7 +80,7 @@ func (h handler) GetSummaryBalanceHandler(c echo.Context) error {
 		},
 		{
 			Id:              3,
-			Date:            "2024-10-29T19:00:00.000Z",
+			Date:            "2024-10-28T19:00:00.000Z",
 			Amount:          2000,
 			Catergory:       "Transport",
 			TransactionType: "income",
@@ -90,7 +90,7 @@ func (h handler) GetSummaryBalanceHandler(c echo.Context) error {
 		},
 		{
 			Id:              4,
-			Date:            "2024-10-29T19:00:00.000Z",
+			Date:            "2024-10-27T19:00:00.000Z",
 			Amount:          2000,
 			Catergory:       "Transport",
 			TransactionType: "expense",
