@@ -12,7 +12,7 @@ func (h handler) GetAllTransaction(c echo.Context) error {
 	logger := mlog.L(c)
 	ctx := c.Request().Context()
 
-	rows, err := h.db.QueryContext(ctx, `SELECT  id, date, amount, category, transaction_type, note, image_url, spender_id FROM transaction WHERE transaction_type = 'expense'"`)
+	rows, err := h.db.QueryContext(ctx, `SELECT  id, date, amount, category, transaction_type, note, image_url, spender_id FROM transaction WHERE transaction_type = 'expense'`)
 	if err != nil {
 		logger.Error("query error", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, err.Error())

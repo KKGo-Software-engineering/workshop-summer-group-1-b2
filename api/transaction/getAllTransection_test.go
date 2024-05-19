@@ -26,7 +26,7 @@ func TestGetAllExpenses(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "date", "amount", "category", "transaction_type", "note", "image_url", "spender_id"}).
 			AddRow(1, "2021-01-01", 100.0, "Food", "expense", "Lunch", "image_url", 1).
 			AddRow(2, "2021-01-02", 150.0, "Transport", "expense", "Taxi", "image_url", 2)
-		mock.ExpectQuery(`SELECT  id, date, amount, category, transaction_type, note, image_url, spender_id FROM transaction WHERE transaction_type = 'expense'"`).WillReturnRows(rows)
+		mock.ExpectQuery(`SELECT  id, date, amount, category, transaction_type, note, image_url, spender_id FROM transaction WHERE transaction_type = 'expense'`).WillReturnRows(rows)
 
 		h := New(config.FeatureFlag{}, db)
 		err := h.GetAllTransaction(c)
