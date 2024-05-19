@@ -52,13 +52,13 @@ func TestGetSummary(t *testing.T) {
 }
 
 func TestGetBalance(t *testing.T) {
-	s := GetBalance(mockTransaction)
+	s := GetBalance(getTransection())
 
-	if s.TotalAmountEarned != 5000 {
+	if s.TotalAmountEarned != 4000 {
 		t.Errorf("Expected total amount spent is 1000, but got %v", s.TotalAmountEarned)
 	}
 
-	if s.TotalAmountSpent != 2000 {
+	if s.TotalAmountSpent != 1000 {
 		t.Errorf("Expected average amount spent per day is 1000, but got %v", s.TotalAmountSpent)
 	}
 

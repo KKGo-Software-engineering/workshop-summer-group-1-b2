@@ -24,8 +24,8 @@ var expectSummaryIncome = SummaryIncome{
 }
 
 var expectBalance = Balance{
-	TotalAmountEarned: 5000,
-	TotalAmountSpent:  2000,
+	TotalAmountEarned: 4000,
+	TotalAmountSpent:  1000,
 	TotalAmountSaved:  3000,
 }
 
