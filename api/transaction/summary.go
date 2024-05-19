@@ -51,7 +51,39 @@ func (h handler) GetSummaryExpensesHandler(c echo.Context) error {
 }
 
 func (h handler) GetSummaryIncomeHandler(c echo.Context) error {
-	s := GetSummary(getTransection())
+	logger := mlog.L(c)
+	ctx := c.Request().Context()
+
+	rows, err := h.db.QueryContext(ctx, `SELECT * FROM transaction WHERE transaction_type = $1`, "income")
+	if err != nil {
+		logger.Error("query error", zap.Error(err))
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	defer rows.Close()
+
+	var ts []Transaction
+	for rows.Next() {
+		var t Transaction
+
+		err := rows.Scan(&t.Id, &t.Date, &t.Amount, &t.Catergory, &t.TransactionType, &t.Note, &t.ImageUrl, &t.SpenderId)
+		if err != nil {
+			logger.Error("query error", zap.Error(err))
+			return c.JSON(http.StatusInternalServerError, ResponseMsg{
+				Message: QueryErrorMsg,
+			})
+		}
+
+		ts = append(ts, t)
+	}
+
+	if len(ts) == 0 {
+		return c.JSON(http.StatusOK, ResponseMsg{
+			Message: NoTransactionMsg,
+		})
+	}
+
+	s := GetSummary(ts)
 
 	return c.JSON(http.StatusOK, SummaryIncome{
 		TotalAmountEarned:     s.Total,
