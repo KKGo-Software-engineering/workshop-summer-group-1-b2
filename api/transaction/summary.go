@@ -1,66 +1,46 @@
 package transaction
 
-type SummaryExpenses struct {
-	TotalAmountSpent     float64 `json:"total_amount_spent"`
-	AvgAmountSpentPerDay float64 `json:"avg_amount_spent_per_day"`
-	TotalNumberSpent     int     `json:"total_number_spent"`
-}
+import (
+	"net/http"
 
-type SummaryIncome struct {
-	TotalAmountEarned     float64 `json:"total_amount_earned"`
-	AvgAmountEarnedPerDay float64 `json:"avg_amount_earned_per_day"`
-	TotalNumberEarned     int     `json:"total_number_earned"`
-}
+	"github.com/labstack/echo/v4"
+)
 
-type Balance struct {
-	TotalAmountEarned float64 `json:"total_amount_earned"`
-	TotalAmountSpent  float64 `json:"total_amount_spent"`
-	TotalAmountSaved  float64 `json:"total_amount_saved"`
-}
+func (h handler) GetSummaryExpensesHandler(c echo.Context) error {
 
-func getTransection() []Transaction {
-	mockTransaction := []Transaction{
-		{
-			Id:              1,
-			Date:            "2024-04-30T09:00:00.000Z",
-			Amount:          1000,
-			Catergory:       "Food",
-			TransectionType: "expense",
-			Note:            "Lunch",
-			ImageUrl:        "https://example.com/image1.jpg",
-			SpenderId:       1,
-		},
-		{
-			Id:              2,
-			Date:            "2024-04-29T19:00:00.000Z",
-			Amount:          2000,
-			Catergory:       "Transport",
-			TransectionType: "income",
-			Note:            "Salary",
-			ImageUrl:        "https://example.com/image2.jpg",
-			SpenderId:       1,
-		},
-	}
+	// logger := mlog.L(c)
+	// ctx := c.Request().Context()
 
-	return mockTransaction
-}
+	// rows, err := h.db.QueryContext(ctx, `SELECT * FROM transaction`)
+	// if err != nil {
+	// 	logger.Error("query error", zap.Error(err))
+	// 	return c.JSON(http.StatusInternalServerError, err.Error())
 
-func GetSummaryExpenses() SummaryExpenses {
-	transactions := getTransection()
-	totalAmountSpent := 0.0
-	totalNumberSpent := 0
+	// }
 
-	for _, transaction := range transactions {
-		if transaction.TransectionType == "expense" {
-			totalAmountSpent += transaction.Amount
-			totalNumberSpent++
-		}
-	}
+	// defer rows.Close()
 
-	return SummaryExpenses{
-		TotalAmountSpent:     totalAmountSpent,
-		AvgAmountSpentPerDay: totalAmountSpent / float64(totalNumberSpent),
-		TotalNumberSpent:     totalNumberSpent,
-	}
+	// var transactions []Transaction
 
+	// for rows.Next() {
+	// 	var t Transaction
+	// 	err := rows.Scan(&t.Id, &t.Date, &t.Amount, &t.Catergory, &t.TransectionType, &t.Note, &t.ImageUrl, &t.SpenderId)
+	// 	if err != nil {
+	// 		logger.Error("scan error", zap.Error(err))
+	// 		return c.JSON(http.StatusInternalServerError, err.Error())
+	// 	}
+
+	// 	transactions = append(transactions, t)
+	// }
+
+	// print(transactions)
+
+	// summaryExpenses := GetSummaryExpenses(getTransection())
+	s := GetSummary(getTransection())
+
+	return c.JSON(http.StatusOK, SummaryExpenses{
+		TotalAmountSpent:     s.Total,
+		AvgAmountSpentPerDay: s.Average,
+		TotalNumberSpent:     s.TotalNumber,
+	})
 }

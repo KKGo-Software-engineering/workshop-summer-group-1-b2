@@ -1,19 +1,37 @@
 package transaction
 
-import "testing"
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/KKGo-Software-engineering/workshop-summer/api/config"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+)
+
+var mockSummaryExpesnse = SummaryExpenses{
+	TotalAmountSpent:     5000,
+	AvgAmountSpentPerDay: 1666.67,
+	TotalNumberSpent:     3,
+}
 
 func TestGetSummaryExpenses(t *testing.T) {
-	summaryExpenses := GetSummaryExpenses()
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
-	if summaryExpenses.TotalAmountSpent != 1000 {
-		t.Errorf("Expected total amount spent is 1000, but got %v", summaryExpenses.TotalAmountSpent)
-	}
+	cfg := config.FeatureFlag{EnableCreateSpender: true}
 
-	if summaryExpenses.AvgAmountSpentPerDay != 1000 {
-		t.Errorf("Expected average amount spent per day is 1000, but got %v", summaryExpenses.AvgAmountSpentPerDay)
-	}
+	p := New(cfg, nil)
+	err := p.GetSummaryExpensesHandler(c)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, rec.Code)
+	m, _ := json.Marshal(mockSummaryExpesnse)
 
-	if summaryExpenses.TotalNumberSpent != 1 {
-		t.Errorf("Expected total number spent is 1, but got %v", summaryExpenses.TotalNumberSpent)
-	}
+	assert.JSONEq(t, string(m), rec.Body.String())
+
 }

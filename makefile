@@ -8,6 +8,10 @@ test:
 	@echo "Running tests..."
 	go test -v ./...
 
+test-cover:
+	go test -coverprofile coverage.html ./...
+	go tool cover -html=coverage.html
+
 .PHONY: test-it
 test-it:
 	@echo "Running integration tests..."
@@ -36,6 +40,9 @@ upload:
 run:
 	@echo "Running the server..."
 	go run main.go
+
+run-env:
+	SERVER_PORT=8080 ENV=LOCAL LOCAL_DATABASE_POSTGRES_URI=postgres://postgres:password@localhost:5432/hongjot?sslmode=disable go run main.go
 
 .PHONY: slow
 slow:
