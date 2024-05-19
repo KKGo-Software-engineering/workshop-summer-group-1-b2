@@ -55,50 +55,50 @@ func (h handler) GetSummaryIncomeHandler(c echo.Context) error {
 	})
 }
 
-func (h handler) GetSummaryBalanceHandler(c echo.Context) error {
+var mockTransaction = []Transaction{
+	{
+		Id:              1,
+		Date:            "2024-10-30T09:00:00.000Z",
+		Amount:          1000,
+		Catergory:       "Food",
+		TransactionType: "income",
+		Note:            "Lunch",
+		ImageUrl:        "https://example.com/image21.jpg",
+		SpenderId:       1,
+	},
+	{
+		Id:              2,
+		Date:            "2024-10-29T19:00:00.000Z",
+		Amount:          2000,
+		Catergory:       "Transport",
+		TransactionType: "income",
+		Note:            "Salary",
+		ImageUrl:        "https://example.com/image22.jpg",
+		SpenderId:       1,
+	},
+	{
+		Id:              3,
+		Date:            "2024-10-28T19:00:00.000Z",
+		Amount:          2000,
+		Catergory:       "Transport",
+		TransactionType: "income",
+		Note:            "Salary",
+		ImageUrl:        "https://example.com/image23.jpg",
+		SpenderId:       1,
+	},
+	{
+		Id:              4,
+		Date:            "2024-10-27T19:00:00.000Z",
+		Amount:          2000,
+		Catergory:       "Transport",
+		TransactionType: "expense",
+		Note:            "Salary",
+		ImageUrl:        "https://example.com/image24.jpg",
+		SpenderId:       1,
+	},
+}
 
-	var mockTransaction = []Transaction{
-		{
-			Id:              1,
-			Date:            "2024-10-30T09:00:00.000Z",
-			Amount:          1000,
-			Catergory:       "Food",
-			TransactionType: "income",
-			Note:            "Lunch",
-			ImageUrl:        "https://example.com/image21.jpg",
-			SpenderId:       1,
-		},
-		{
-			Id:              2,
-			Date:            "2024-10-29T19:00:00.000Z",
-			Amount:          2000,
-			Catergory:       "Transport",
-			TransactionType: "income",
-			Note:            "Salary",
-			ImageUrl:        "https://example.com/image22.jpg",
-			SpenderId:       1,
-		},
-		{
-			Id:              3,
-			Date:            "2024-10-28T19:00:00.000Z",
-			Amount:          2000,
-			Catergory:       "Transport",
-			TransactionType: "income",
-			Note:            "Salary",
-			ImageUrl:        "https://example.com/image23.jpg",
-			SpenderId:       1,
-		},
-		{
-			Id:              4,
-			Date:            "2024-10-27T19:00:00.000Z",
-			Amount:          2000,
-			Catergory:       "Transport",
-			TransactionType: "expense",
-			Note:            "Salary",
-			ImageUrl:        "https://example.com/image24.jpg",
-			SpenderId:       1,
-		},
-	}
+func (h handler) GetSummaryBalanceHandler(c echo.Context) error {
 
 	s := GetBalance(mockTransaction)
 
