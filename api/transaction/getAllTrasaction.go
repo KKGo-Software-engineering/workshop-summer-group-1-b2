@@ -3,7 +3,6 @@ package transaction
 import (
 	"net/http"
 
-	"github.com/KKGo-Software-engineering/workshop-summer/api/config"
 	"github.com/kkgo-software-engineering/workshop/mlog"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
