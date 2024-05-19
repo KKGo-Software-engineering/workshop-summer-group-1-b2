@@ -17,6 +17,12 @@ var mockSummaryExpesnse = SummaryExpenses{
 	TotalNumberSpent:     3,
 }
 
+var mockSummaryIncome = SummaryIncome{
+	TotalAmountEarned:     5000,
+	AvgAmountEarnedPerDay: 1666.67,
+	TotalNumberEarned:     3,
+}
+
 func TestGetSummaryExpenses(t *testing.T) {
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
@@ -31,6 +37,25 @@ func TestGetSummaryExpenses(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, rec.Code)
 	m, _ := json.Marshal(mockSummaryExpesnse)
+
+	assert.JSONEq(t, string(m), rec.Body.String())
+
+}
+
+func TestGetSummaryIncome(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	cfg := config.FeatureFlag{EnableCreateSpender: true}
+
+	p := New(cfg, nil)
+	err := p.GetSummaryIncomeHandler(c)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, rec.Code)
+	m, _ := json.Marshal(mockSummaryIncome)
 
 	assert.JSONEq(t, string(m), rec.Body.String())
 

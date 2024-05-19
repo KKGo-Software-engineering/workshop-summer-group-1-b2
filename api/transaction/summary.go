@@ -44,3 +44,13 @@ func (h handler) GetSummaryExpensesHandler(c echo.Context) error {
 		TotalNumberSpent:     s.TotalNumber,
 	})
 }
+
+func (h handler) GetSummaryIncomeHandler(c echo.Context) error {
+	s := GetSummary(getTransection())
+
+	return c.JSON(http.StatusOK, SummaryIncome{
+		TotalAmountEarned:     s.Total,
+		AvgAmountEarnedPerDay: s.Average,
+		TotalNumberEarned:     s.TotalNumber,
+	})
+}
