@@ -42,20 +42,20 @@ func (h handler) GetFilteredTransaction(c echo.Context) error {
 	query += " ORDER BY date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
 	args = append(args, offset, limit)
 
-	rows, err := h.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		logger.Error("query error", zap.Error(err))
-		return c.JSON(http.StatusInternalServerError, err.Error())
+	rows, err2 := h.db.QueryContext(ctx, query, args...)
+	if err2 != nil {
+		logger.Error("query error", zap.Error(err2))
+		return c.JSON(http.StatusInternalServerError, err2.Error())
 	}
 	defer rows.Close()
 
 	var trans []Transaction
 	for rows.Next() {
 		var tran Transaction
-		err := rows.Scan(&tran.Id, &tran.Date, &tran.Amount, &tran.Catergory, &tran.TransactionType, &tran.Note, &tran.ImageUrl, &tran.SpenderId)
-		if err != nil {
-			logger.Error("scan error", zap.Error(err))
-			return c.JSON(http.StatusInternalServerError, err.Error())
+		err3 := rows.Scan(&tran.Id, &tran.Date, &tran.Amount, &tran.Catergory, &tran.TransactionType, &tran.Note, &tran.ImageUrl, &tran.SpenderId)
+		if err3 != nil {
+			logger.Error("scan error", zap.Error(err3))
+			return c.JSON(http.StatusInternalServerError, err3.Error())
 		}
 		trans = append(trans, tran)
 	}
