@@ -6,15 +6,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/KKGo-Software-engineering/workshop-summer/api/config"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 var expectSummaryExpesnse = SummaryExpenses{
-	TotalAmountSpent:     5000,
-	AvgAmountSpentPerDay: 1666.67,
-	TotalNumberSpent:     3,
+	TotalAmountSpent:     2800,
+	AvgAmountSpentPerDay: 1400,
+	TotalNumberSpent:     2,
 }
 
 var expectSummaryIncome = SummaryIncome{
@@ -30,21 +31,78 @@ var expectBalance = Balance{
 }
 
 func TestGetSummaryExpenses(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
 
-	cfg := config.FeatureFlag{EnableCreateSpender: true}
+	t.Run("have error with query should return error", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
 
-	p := New(cfg, nil)
-	err := p.GetSummaryExpensesHandler(c)
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, rec.Code)
-	m, _ := json.Marshal(expectSummaryExpesnse)
+		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		defer db.Close()
 
-	assert.JSONEq(t, string(m), rec.Body.String())
+		sqlmock.NewRows([]string{"id", "date", "amount", "category", "transaction_type", "note", "image_url", "spender_id"})
+		mock.ExpectQuery(`SELECT FROM transaction WHERE transaction_type = $1`).WithArgs("expense").WillReturnError(assert.AnError)
+		cfg := config.FeatureFlag{EnableCreateSpender: true}
+
+		p := New(cfg, db)
+		err := p.GetSummaryExpensesHandler(c)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	})
+
+	t.Run("get all summary expenses should return list", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		defer db.Close()
+
+		rows := sqlmock.NewRows([]string{"id", "date", "amount", "category", "transaction_type", "note", "image_url", "spender_id"}).
+			AddRow(1, "2024-04-30 09:00:00+00", 1000, "Food", "expense", "Lunch", "https://example.com/image1.jpg", 1).
+			AddRow(2, "2024-04-27 19:00:00+00", 1800, "Bills", "expense", "Electricity bill", "https://example.com/image9.jpg", 1)
+
+		mock.ExpectQuery(`SELECT * FROM transaction WHERE transaction_type = $1`).WithArgs("expense").WillReturnRows(rows)
+		cfg := config.FeatureFlag{EnableCreateSpender: true}
+
+		p := New(cfg, db)
+		err := p.GetSummaryExpensesHandler(c)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, rec.Code)
+
+		m, _ := json.Marshal(expectSummaryExpesnse)
+		assert.JSONEq(t, string(m), rec.Body.String())
+	})
+
+	t.Run("no transaction should return message transaction not found", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/expenses/summary", nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		defer db.Close()
+
+		rows := sqlmock.NewRows([]string{"id", "date", "amount", "category", "transaction_type", "note", "image_url", "spender_id"})
+		mock.ExpectQuery(`SELECT * FROM transaction WHERE transaction_type = $1`).WithArgs("expense").WillReturnRows(rows)
+		cfg := config.FeatureFlag{EnableCreateSpender: true}
+
+		p := New(cfg, db)
+		err := p.GetSummaryExpensesHandler(c)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, rec.Code)
+
+		m, _ := json.Marshal(ResponseMsg{Message: NoTransactionMsg})
+		assert.JSONEq(t, string(m), rec.Body.String())
+	})
 
 }
 

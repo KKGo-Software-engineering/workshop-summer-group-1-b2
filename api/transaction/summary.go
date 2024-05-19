@@ -3,40 +3,45 @@ package transaction
 import (
 	"net/http"
 
+	"github.com/KKGo-Software-engineering/workshop-summer/api/mlog"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 func (h handler) GetSummaryExpensesHandler(c echo.Context) error {
+	logger := mlog.L(c)
+	ctx := c.Request().Context()
 
-	// logger := mlog.L(c)
-	// ctx := c.Request().Context()
+	rows, err := h.db.QueryContext(ctx, `SELECT * FROM transaction WHERE transaction_type = $1`, "expense")
+	if err != nil {
+		logger.Error("query error", zap.Error(err))
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
 
-	// rows, err := h.db.QueryContext(ctx, `SELECT * FROM transaction`)
-	// if err != nil {
-	// 	logger.Error("query error", zap.Error(err))
-	// 	return c.JSON(http.StatusInternalServerError, err.Error())
+	defer rows.Close()
 
-	// }
+	var ts []Transaction
+	for rows.Next() {
+		var t Transaction
 
-	// defer rows.Close()
+		err := rows.Scan(&t.Id, &t.Date, &t.Amount, &t.Catergory, &t.TransactionType, &t.Note, &t.ImageUrl, &t.SpenderId)
+		if err != nil {
+			logger.Error("query error", zap.Error(err))
+			return c.JSON(http.StatusInternalServerError, ResponseMsg{
+				Message: QueryErrorMsg,
+			})
+		}
 
-	// var transactions []Transaction
+		ts = append(ts, t)
+	}
 
-	// for rows.Next() {
-	// 	var t Transaction
-	// 	err := rows.Scan(&t.Id, &t.Date, &t.Amount, &t.Catergory, &t.TransectionType, &t.Note, &t.ImageUrl, &t.SpenderId)
-	// 	if err != nil {
-	// 		logger.Error("scan error", zap.Error(err))
-	// 		return c.JSON(http.StatusInternalServerError, err.Error())
-	// 	}
+	if len(ts) == 0 {
+		return c.JSON(http.StatusOK, ResponseMsg{
+			Message: NoTransactionMsg,
+		})
+	}
 
-	// 	transactions = append(transactions, t)
-	// }
-
-	// print(transactions)
-
-	// summaryExpenses := GetSummaryExpenses(getTransection())
-	s := GetSummary(getTransection())
+	s := GetSummary(ts)
 
 	return c.JSON(http.StatusOK, SummaryExpenses{
 		TotalAmountSpent:     s.Total,

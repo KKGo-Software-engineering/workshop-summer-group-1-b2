@@ -17,6 +17,15 @@ type Transaction struct {
 	SpenderId       int64   `json:"spender_id"`
 }
 
+type ResponseMsg struct {
+	Message string `json:"message"`
+}
+
+const (
+	NoTransactionMsg = "transaction not found"
+	QueryErrorMsg    = "something went wrong with query"
+)
+
 type handler struct {
 	flag config.FeatureFlag
 	db   *sql.DB
